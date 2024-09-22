@@ -10,7 +10,7 @@ This is a full-stack WhatsApp clone application, developed using Flutter for the
 - RiverPod
 - Firebase Auth
 - Firebase Storage
-- Firebase Clod Firestore
+- Firebase Cloud Firestore
 - Agora
 
 ## 📚Process
