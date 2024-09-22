@@ -1,0 +1,20 @@
+import 'package:flutter/material.dart';
+
+const backgroundColor = Color.fromRGBO(19, 28, 33, 1);
+const textColor = Color.fromRGBO(241, 241, 242, 1);
+const appBarColor = Color.fromRGBO(31, 44, 52, 1);
+const webAppBarColor = Color(0xFF202C33);
+const messageColor = Color(0xFF005C4B);
+const senderMessageColor = Color(0xFF202C33);
+const tabColor = Color.fromRGBO(0, 167, 131, 1);
+const searchBarColor = Color(0xFF2A3942);
+const dividerColor = Color.fromRGBO(37, 45, 50, 1);
+const chatBarMessage = Color(0xFF202C33);
+const mobileChatBoxColor = Color(0xFF1F2C34);
+const kGreyColor = Colors.grey;
+const floatingActionColor = Color(0xFF21C161);
+const kBlackColor = Colors.black;
+const myMessageCardColor = Color(0xFF134D37);
+const myMessageReplyCardColor = Color(0xFF134333);
+const senderMessageCardColor = Color(0xFF1F2C34);
+const senderMessageReplyCardColor = Color(0xFF1E2831);

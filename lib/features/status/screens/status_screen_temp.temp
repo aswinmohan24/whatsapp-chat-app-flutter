@@ -1,0 +1,182 @@
+// import 'dart:io';
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:whatsapp_clone/common/utils/utils.dart';
+// import 'package:whatsapp_clone/common/widgets/loader.dart';
+// import 'package:whatsapp_clone/core/colors.dart';
+// import 'package:whatsapp_clone/features/status/controller/status_controller.dart';
+// import 'package:whatsapp_clone/features/status/screens/confirm_status_screen.dart';
+// import 'package:whatsapp_clone/features/status/screens/status_view_screen.dart';
+// import 'package:whatsapp_clone/models/status_models.dart';
+// import 'package:whatsapp_clone/widgets/mobile/appbar_widget.dart';
+
+// class StatusScreen extends ConsumerWidget {
+//   const StatusScreen({super.key});
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final size = MediaQuery.of(context).size;
+//     return SafeArea(
+//       child: Scaffold(
+//         appBar: PreferredSize(
+//             preferredSize: size * .15,
+//             child: const AppBarWidget(
+//                 appBarTitle: 'Updates',
+//                 fontSize: 25,
+//                 fontWeight: FontWeight.w300)),
+//         body: FutureBuilder<List<Status>>(
+//             future: ref.read(statusControllerProvider).getStatus(context),
+//             builder: (context, snapShot) {
+//               if (snapShot.connectionState == ConnectionState.waiting) {
+//                 return const Loader();
+//               }
+//               return ListView.builder(
+//                   itemCount: snapShot.data!.length,
+//                   itemBuilder: (context, index) {
+//                     var statusData = snapShot.data![index];
+//                     return InkWell(
+//                       onTap: () {
+//                         Navigator.pushNamed(context, StatusViewScreen.routeName,
+//                             arguments: statusData);
+//                       },
+//                       child: Padding(
+//                         padding: const EdgeInsets.all(8.0),
+//                         child: ListTile(
+//                           title: Text(
+//                             statusData.userName,
+//                             style: const TextStyle(fontSize: 18),
+//                           ),
+//                           leading: CircleAvatar(
+//                             backgroundImage:
+//                                 NetworkImage(statusData.profilePic),
+//                             radius: 30,
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   });
+//             }),
+//         floatingActionButton: FloatingActionButton(
+//           backgroundColor: floatingActionColor,
+//           onPressed: () async {
+//             File? pickedImage = await pickImageFromGallery(context);
+//             if (pickedImage != null) {
+//               if (context.mounted) {
+//                 Navigator.pushNamed(context, ConfirmStatusScreen.routeName,
+//                     arguments: pickedImage);
+//               }
+//             }
+//           },
+//           child: const Icon(
+//             Icons.camera_alt,
+//             color: kBlackColor,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whatsapp_clone/common/utils/utils.dart';
+import 'package:whatsapp_clone/common/widgets/loader.dart';
+import 'package:whatsapp_clone/core/colors.dart';
+import 'package:whatsapp_clone/features/status/controller/status_controller.dart';
+import 'package:whatsapp_clone/features/status/screens/confirm_status_screen.dart';
+import 'package:whatsapp_clone/features/status/screens/status_view_screen.dart';
+import 'package:whatsapp_clone/models/status_models.dart';
+import 'package:whatsapp_clone/widgets/mobile/appbar_widget.dart';
+
+final statusProvider =
+    StateNotifierProvider<StatusNotifier, List<Status>>((ref) {
+  return StatusNotifier(ref);
+});
+
+class StatusNotifier extends StateNotifier<List<Status>> {
+  final Ref ref;
+
+  StatusNotifier(this.ref) : super([]);
+
+  Future<void> fetchStatus(BuildContext context) async {
+    if (state.isEmpty) {
+      final statusList =
+          await ref.read(statusControllerProvider).getStatus(context);
+      state = statusList;
+    }
+  }
+}
+
+class StatusScreen extends ConsumerWidget {
+  const StatusScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final statusNotifier = ref.read(statusProvider.notifier);
+    final size = MediaQuery.of(context).size;
+
+    // Trigger the data fetch only if it's not already fetched
+    if (ref.watch(statusProvider).isEmpty) {
+      statusNotifier.fetchStatus(context);
+    }
+
+    final statusList = ref.watch(statusProvider);
+
+    return SafeArea(
+      child: Scaffold(
+        appBar: PreferredSize(
+            preferredSize: size * .15,
+            child: const AppBarWidget(
+                appBarTitle: 'Updates',
+                fontSize: 25,
+                fontWeight: FontWeight.w300)),
+        body: statusList.isEmpty
+            ? const Text('No Status')
+            : ListView.builder(
+                itemCount: statusList.length,
+                itemBuilder: (context, index) {
+                  var statusData = statusList[index];
+                  return ListTile(
+                    title: Text(
+                      statusData.userName,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(statusData.profilePic),
+                      radius: 30,
+                    ),
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        StatusViewScreen.routeName,
+                        arguments: statusData,
+                      );
+                    },
+                  );
+                },
+              ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: floatingActionColor,
+          onPressed: () async {
+            File? pickedImage = await pickImageFromGallery(context);
+            if (pickedImage != null) {
+              if (context.mounted) {
+                Navigator.pushNamed(context, ConfirmStatusScreen.routeName,
+                    arguments: pickedImage);
+              }
+            }
+          },
+          child: const Icon(
+            Icons.camera_alt,
+            color: kBlackColor,
+          ),
+        ),
+      ),
+    );
+  }
+}
