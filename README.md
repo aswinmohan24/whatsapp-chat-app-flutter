@@ -11,7 +11,7 @@ This is a full-stack WhatsApp clone application, developed using Flutter for the
 - Firebase Auth
 - Firebase Storage
 - Firebase Cloud Firestore
-- Agora
+
 
 ## 📚Process
 The development process is as follows:
